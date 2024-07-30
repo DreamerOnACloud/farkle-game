@@ -1,0 +1,28 @@
+.dice-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+  }
+  
+  .dice {
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10%;
+    background-color: #2c2c2c;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .dice {
+    transition: transform 0.3s;
+  }
+  
+  .dice.roll {
+    transform: rotate(360deg);
+  }
+  
