@@ -3,11 +3,18 @@ import Dice from './components/Dice/Dice.js';
 import Controls from './components/Controls/Controls.js';
 import { calculateScore, getScoringDiceIndices } from './gameLogic';
 
-// Initialize dice state with all values set to 0
-const initializeDiceState = () => Array(6).fill().map((_, index) => ({ index, value: 0, active: true }));
+// Define the initial state of dice with all values set to 0 and active status
+const initialDiceState = () => [
+  { index: 0, value: 0, active: true },
+  { index: 1, value: 0, active: true },
+  { index: 2, value: 0, active: true },
+  { index: 3, value: 0, active: true },
+  { index: 4, value: 0, active: true },
+  { index: 5, value: 0, active: true }
+];
 
 // Update dice state with random values
-const updateDiceState = () => Array(6).fill().map((_, index) => ({ index, value: Math.floor(Math.random() * 6) + 1, active: true }));
+const updateDiceState = () => initialDiceState().map(die => ({ ...die, value: Math.floor(Math.random() * 6) + 1 }));
 
 // Helper function to get dice values
 const getDiceValues = (diceState) => diceState.map(die => die.value);
@@ -18,7 +25,7 @@ const getDice = (diceState) => diceState.map(die => ({ index: die.index, value: 
 const App = () => {
   const [totalScore, setTotalScore] = useState(0);
   const [turnScore, setTurnScore] = useState(0);
-  const [diceState, setDiceState] = useState(initializeDiceState());
+  const [diceState, setDiceState] = useState(initialDiceState());
   const [scoreDetails, setScoreDetails] = useState("");
 
   // Call restartGame to initialize the game state
@@ -78,7 +85,8 @@ const App = () => {
   const restartGame = () => {
     setTotalScore(0);
     setTurnScore(0);
-    setDiceState(initializeDiceState()); // Initialize dice state with values set to 0
+    const newDice = updateDiceState();
+    setDiceState(newDice);
     setScoreDetails("");
     firstRoll(); // Initial roll on game restart
   };
