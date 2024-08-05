@@ -1,20 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Dice from './components/Dice/Dice.js';
 import Controls from './components/Controls/Controls.js';
-import { calculateScore, getScoringDiceIndices } from './gameLogic';
+import { calculateScore, getScoringDiceIndices, initialDiceState, updateDiceState } from './gameLogic';
 
-// Define the initial state of dice with all values set to 0 and active status
-const initialDiceState = () => [
-  { index: 0, value: 0, active: true },
-  { index: 1, value: 0, active: true },
-  { index: 2, value: 0, active: true },
-  { index: 3, value: 0, active: true },
-  { index: 4, value: 0, active: true },
-  { index: 5, value: 0, active: true }
-];
-
-// Update dice state with random values
-const updateDiceState = () => initialDiceState().map(die => ({ ...die, value: Math.floor(Math.random() * 6) + 1 }));
 
 // Helper function to get dice values
 const getDiceValues = (diceState) => diceState.map(die => die.value);

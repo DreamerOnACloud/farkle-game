@@ -1,3 +1,15 @@
+// Define the initial state of dice with all values set to 0 and active status
+export const initialDiceState = () => [
+  { index: 0, value: 0, active: true },
+  { index: 1, value: 0, active: true },
+  { index: 2, value: 0, active: true },
+  { index: 3, value: 0, active: true },
+  { index: 4, value: 0, active: true },
+  { index: 5, value: 0, active: true }
+];
+
+// Update dice state with random values
+export const updateDiceState = () => initialDiceState().map(die => ({ ...die, value: Math.floor(Math.random() * 6) + 1 }));
 
 export const calculateTripletScore = (count, index) => {
   if (index === 0) { // Special case for 1s
