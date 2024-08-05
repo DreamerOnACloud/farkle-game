@@ -1,10 +1,10 @@
 import React from 'react';
 import './Dice.css';
 
-const Dice = ({ diceValues }) => (
+const Dice = ({ dice }) => (
   <div className="dice-container">
-    {diceValues.map((value, index) => (
-      <div key={index} className="dice">{value}</div>
+    {dice.map((die, index) => (
+      <div key={index} className="dice">{die.value}</div>
     ))}
   </div>
 );
