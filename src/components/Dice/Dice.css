@@ -20,6 +20,14 @@
   .dice {
     transition: transform 0.3s;
   }
+
+  .dice.active {
+    background-color: green;
+  }
+  
+  .dice.inactive {
+    background-color: red;
+  }
   
   .dice.roll {
     transform: rotate(360deg);

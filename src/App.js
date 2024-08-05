@@ -1,14 +1,7 @@
-import React, { useState, useEffect } from "react";
-import Dice from "./components/Dice/Dice.js";
-import Controls from "./components/Controls/Controls.js";
-import {
-  calculateScore,
-  getScoringDiceIndices,
-  initialDiceState,
-  updateDiceState,
-  getDiceValues,
-  getDice,
-} from "./gameLogic";
+import React, { useState, useEffect } from 'react';
+import Dice from './components/Dice/Dice.js';
+import Controls from './components/Controls/Controls.js';
+import { calculateScore, getScoringDiceIndices, initialDiceState, updateDiceState, getDiceValues, getDice } from './gameLogic';
 
 const App = () => {
   const [totalScore, setTotalScore] = useState(0);
@@ -27,19 +20,12 @@ const App = () => {
     setScoreDetails(`Turn score: ${score}. ${scoreMessage}`);
   };
 
-  const firstRoll = () => {
-    const newDice = updateDiceState(diceState);
-    setDiceState(newDice);
-    updateScores(newDice);
-  };
-
-  const reroll = () => {
-    const scoringDiceIndices = getScoringDiceIndices(getDiceValues(diceState));
-    const newDice = diceState.map((die) => {
-      if (!scoringDiceIndices.includes(die.index + 1)) {
-        return { ...die, value: Math.floor(Math.random() * 6) + 1, active: true };
+  const rollDice = () => {
+    const newDice = diceState.map(die => {
+      if (die.active) {
+        return { ...die, value: Math.floor(Math.random() * 6) + 1 };
       }
-      return { ...die, active: false };
+      return die;
     });
     setDiceState(newDice);
     updateScores(newDice);
@@ -61,18 +47,23 @@ const App = () => {
     const newTotalScore = totalScore + turnScore;
     setTotalScore(newTotalScore);
     setTurnScore(0);
-    setDiceState(updateDiceState(diceState)); // Reset dice for the next turn
-    setScoreDetails(""); // Clear score details
+    setDiceState(updateDiceState(initialDiceState())); // Reset dice for the next turn
+    setScoreDetails("");
   };
 
   const restartGame = () => {
     setTotalScore(0);
     setTurnScore(0);
-    const newDice = updateDiceState(diceState);
+    initializeGame();
+  };
+  
+  const initializeGame = () => {
+    const newDice = updateDiceState(initialDiceState());
     setDiceState(newDice);
     setScoreDetails("");
-    firstRoll(); // Initial roll on game restart
+    rollDice(newDice); // Initial roll on game restart
   };
+  
 
   const scoreAndReroll = () => {
     score();
@@ -80,7 +71,7 @@ const App = () => {
     const newTotalScore = totalScore + turnScore;
     checkForEndGame(newTotalScore);
     if (newTotalScore < 4000) {
-      reroll();
+      rollDice();
     }
   };
 
@@ -92,13 +83,15 @@ const App = () => {
       </div>
       <Dice dice={getDice(diceState)} />
       <Controls
-        reroll={reroll}
+        rollDice={rollDice}
         score={score}
         endTurn={endTurn}
         restart={restartGame}
         scoreAndReroll={scoreAndReroll}
       />
-      <div className="score-details">{scoreDetails}</div>
+      <div className="score-details">
+        {scoreDetails}
+      </div>
     </div>
   );
 };
