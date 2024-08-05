@@ -9,7 +9,7 @@ export const initialDiceState = () => [
 ];
 
 // Update dice state with random values
-export const updateDiceState = () => initialDiceState().map(die => ({ ...die, value: Math.floor(Math.random() * 6) + 1 }));
+export const updateDiceState = (dice) => dice.map(die => ({ ...die, value: Math.floor(Math.random() * 6) + 1 }));
 
 export const calculateTripletScore = (count, index) => {
   if (index === 0) { // Special case for 1s
@@ -70,3 +70,8 @@ export const calculateScore = (diceValues) => {
 
   return { score, scoreMessage, scoringDice };
 };
+
+// New helper functions
+export const getDiceValues = (diceState) => diceState.map(die => die.value);
+
+export const getDice = (diceState) => diceState.map(die => ({ index: die.index, value: die.value, active: die.active }));
