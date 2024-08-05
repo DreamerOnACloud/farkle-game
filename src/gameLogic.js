@@ -1,13 +1,3 @@
-// Define the initial state of dice with all values set to 0 and active status
-export const initialDiceState = () => [
-  { index: 0, value: 0, active: true },
-  { index: 1, value: 0, active: true },
-  { index: 2, value: 0, active: true },
-  { index: 3, value: 0, active: true },
-  { index: 4, value: 0, active: true },
-  { index: 5, value: 0, active: true }
-];
-
 // Update dice state with random values
 export const updateDiceState = (dice) => dice.map(die => ({ ...die, value: Math.floor(Math.random() * 6) + 1 }));
 
@@ -19,7 +9,7 @@ export const calculateTripletScore = (count, index) => {
   }
 };
 
-export const addSingleScores = (counts, scoringDice) => {
+export const calculateSingleScores = (counts, scoringDice) => {
   let score = 0;
   let scoreMessage = "";
 
@@ -49,22 +39,31 @@ export const getScoringDiceIndices = (diceValues) => {
 };
 
 export const calculateScore = (diceValues) => {
-  let counts = Array(6).fill(0);
+
+  // counts how many times each number appeared on the rolled dice
+  const countNumberAmounts = (diceValues) => {
+    let counts = Array(6).fill(0);
+    diceValues.forEach((value) => counts[value - 1]++);
+    return counts;
+  };
+
   let score = 0;
+  let tripletScore = 0;
   let scoreMessage = "";
   let scoringDice = [];
 
-  diceValues.forEach((value) => counts[value - 1]++);
-
+  let counts = countNumberAmounts(diceValues);
+  
   counts.forEach((count, index) => {
     if (count >= 3) {
-      score += calculateTripletScore(count, index);
-      scoreMessage += `${count} "${index + 1}"s = ${calculateTripletScore(count, index)} points. `;
+      tripletScore = calculateTripletScore(count, index);
+      score += tripletScore;
+      scoreMessage += `${count} "${index + 1}"s = ${tripletScore} points. `;
       scoringDice.push(...getScoringDiceIndices(diceValues.filter((_, i) => diceValues[i] === index + 1)));
     }
   });
 
-  const singleScores = addSingleScores(counts, scoringDice);
+  const singleScores = calculateSingleScores(counts, scoringDice);
   score += singleScores.score;
   scoreMessage += singleScores.scoreMessage;
 

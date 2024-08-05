@@ -1,24 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import Dice from './components/Dice/Dice.js';
 import Controls from './components/Controls/Controls.js';
-import { calculateScore, getScoringDiceIndices, initialDiceState, updateDiceState, getDiceValues, getDice } from './gameLogic';
+import { calculateScore, getScoringDiceIndices, updateDiceState, getDiceValues, getDice } from './gameLogic';
+
+const initialTotalScore = 0;
+const initialTurnScore = 0;
+
+// Define the initial state of dice with all values set to 0 and active status
+const initialDiceState = [
+  { index: 0, value: 0, active: true },
+  { index: 1, value: 0, active: true },
+  { index: 2, value: 0, active: true },
+  { index: 3, value: 0, active: true },
+  { index: 4, value: 0, active: true },
+  { index: 5, value: 0, active: true }
+];
+
+const initialScoreDetails = "";
 
 const App = () => {
-  const [totalScore, setTotalScore] = useState(0);
-  const [turnScore, setTurnScore] = useState(0);
-  const [diceState, setDiceState] = useState(initialDiceState());
-  const [scoreDetails, setScoreDetails] = useState("");
-
-  useEffect(() => {
-    restartGame();
-  }, []);
-
-  const updateScores = (diceState) => {
-    const diceValues = getDiceValues(diceState);
-    const { score, scoreMessage } = calculateScore(diceValues);
-    setTurnScore(score);
-    setScoreDetails(`Turn score: ${score}. ${scoreMessage}`);
-  };
+  const [totalScore, setTotalScore] = useState(initialTotalScore);
+  const [turnScore, setTurnScore] = useState(initialTurnScore);
+  const [diceState, setDiceState] = useState(initialDiceState);
+  const [scoreDetails, setScoreDetails] = useState(initialScoreDetails);
 
   const rollDice = () => {
     const newDice = diceState.map(die => {
@@ -28,13 +32,35 @@ const App = () => {
       return die;
     });
     setDiceState(newDice);
-    updateScores(newDice);
+    // updateTurnScore(newDice);
+  };
+
+  const updateTurnScore = (diceState) => {
+    const diceValues = diceState.map(die => die.value);
+    const { score, scoreMessage, scoringDice } = calculateScore(diceValues);
+    setTurnScore(score);
+    setScoreDetails(`Turn score: ${score}. ${scoreMessage}\n Scoring dice: ${scoringDice}`);
   };
 
   const score = () => {
-    const { score, scoreMessage } = calculateScore(getDiceValues(diceState));
-    setTurnScore(score);
-    setScoreDetails(scoreMessage);
+    const newTotalScore = totalScore + turnScore;
+    setTotalScore(newTotalScore);
+    setTurnScore(0);
+    setScoreDetails("");
+  }
+
+  const scoreAndEndTurn = () => {
+    score();
+    // update playable dice
+  };
+
+  const scoreAndReroll = () => {
+    updateTurnScore();
+    const newTotalScore = totalScore + turnScore;
+    checkForEndGame(newTotalScore);
+    if (newTotalScore < 4000) {
+      rollDice();
+    }
   };
 
   const checkForEndGame = (newTotalScore) => {
@@ -43,37 +69,21 @@ const App = () => {
     }
   };
 
-  const endTurn = () => {
-    const newTotalScore = totalScore + turnScore;
-    setTotalScore(newTotalScore);
-    setTurnScore(0);
-    setDiceState(updateDiceState(initialDiceState())); // Reset dice for the next turn
-    setScoreDetails("");
+  const resetState = () => {
+    setTotalScore(initialTotalScore);
+    setTurnScore(initialTurnScore);
+    setDiceState(initialDiceState);
+    setScoreDetails(initialScoreDetails);
   };
 
   const restartGame = () => {
-    setTotalScore(0);
-    setTurnScore(0);
-    initializeGame();
+    resetState();
+    rollDice();
   };
-  
-  const initializeGame = () => {
-    const newDice = updateDiceState(initialDiceState());
-    setDiceState(newDice);
-    setScoreDetails("");
-    rollDice(newDice); // Initial roll on game restart
-  };
-  
 
-  const scoreAndReroll = () => {
-    score();
-    endTurn();
-    const newTotalScore = totalScore + turnScore;
-    checkForEndGame(newTotalScore);
-    if (newTotalScore < 4000) {
-      rollDice();
-    }
-  };
+  useEffect(() => {
+    restartGame();
+  }, []);
 
   return (
     <div className="App">
@@ -83,9 +93,11 @@ const App = () => {
       </div>
       <Dice dice={getDice(diceState)} />
       <Controls
+        resetState={resetState}
+        updateTurnScore={() => updateTurnScore(diceState)}
         rollDice={rollDice}
-        score={score}
-        endTurn={endTurn}
+        checkForEndGame={checkForEndGame}
+        scoreAndEndTurn={scoreAndEndTurn}
         restart={restartGame}
         scoreAndReroll={scoreAndReroll}
       />
