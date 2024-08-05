@@ -3,16 +3,22 @@ import Dice from './components/Dice/Dice.js';
 import Controls from './components/Controls/Controls.js';
 import { calculateScore, getScoringDiceIndices } from './gameLogic';
 
-// Initialize dice with value and active status
-const initializeDice = () => Array(6).fill().map((_, index) => ({ index, value: Math.floor(Math.random() * 6) + 1, active: true }));
+// Initialize dice state with all values set to 0
+const initializeDiceState = () => Array(6).fill().map((_, index) => ({ index, value: 0, active: true }));
+
+// Update dice state with random values
+const updateDiceState = () => Array(6).fill().map((_, index) => ({ index, value: Math.floor(Math.random() * 6) + 1, active: true }));
 
 // Helper function to get dice values
-const getDiceValues = (dice) => dice.map(die => die.value);
+const getDiceValues = (diceState) => diceState.map(die => die.value);
+
+// Helper function to get dice object
+const getDice = (diceState) => diceState.map(die => ({ index: die.index, value: die.value, active: die.active }));
 
 const App = () => {
   const [totalScore, setTotalScore] = useState(0);
   const [turnScore, setTurnScore] = useState(0);
-  const [dice, setDice] = useState(initializeDice());
+  const [diceState, setDiceState] = useState(initializeDiceState());
   const [scoreDetails, setScoreDetails] = useState("");
 
   // Call restartGame to initialize the game state
@@ -20,24 +26,24 @@ const App = () => {
     restartGame();
   }, []);
 
-  const updateScores = (dice) => {
-    const diceValues = getDiceValues(dice);
+  const updateScores = (diceState) => {
+    const diceValues = getDiceValues(diceState);
     const { score, scoreMessage } = calculateScore(diceValues);
     setTurnScore(score);
     setScoreDetails(`Turn score: ${score}. ${scoreMessage}`);
   };
 
   const firstRoll = () => {
-    const newDice = initializeDice();
-    setDice(newDice);
+    const newDice = updateDiceState();
+    setDiceState(newDice);
     updateScores(newDice);
   };
 
   const reroll = () => {
-    const scoringDiceIndices = getScoringDiceIndices(getDiceValues(dice));
+    const scoringDiceIndices = getScoringDiceIndices(getDiceValues(diceState));
     console.log("Scoring Dice Indices: ", scoringDiceIndices);
 
-    const newDice = dice.map((die) => {
+    const newDice = diceState.map((die) => {
       if (!scoringDiceIndices.includes(die.index + 1)) {
         return { ...die, value: Math.floor(Math.random() * 6) + 1, active: true };
       }
@@ -45,12 +51,12 @@ const App = () => {
     });
 
     console.log("New Dice Values: ", newDice);
-    setDice(newDice);
+    setDiceState(newDice);
     updateScores(newDice);
   };
 
   const score = () => {
-    const { score, scoreMessage } = calculateScore(getDiceValues(dice));
+    const { score, scoreMessage } = calculateScore(getDiceValues(diceState));
     setTurnScore(score);
     setScoreDetails(scoreMessage);
   };
@@ -65,15 +71,14 @@ const App = () => {
     const newTotalScore = totalScore + turnScore;
     setTotalScore(newTotalScore);
     setTurnScore(0);
-    setDice(initializeDice()); // Reset dice for the next turn
+    setDiceState(updateDiceState()); // Reset dice for the next turn
     setScoreDetails(""); // Clear score details
   };
 
   const restartGame = () => {
     setTotalScore(0);
     setTurnScore(0);
-    const newDice = initializeDice();
-    setDice(newDice);
+    setDiceState(initializeDiceState()); // Initialize dice state with values set to 0
     setScoreDetails("");
     firstRoll(); // Initial roll on game restart
   };
@@ -95,7 +100,7 @@ const App = () => {
         <div className="total-score">Total Score: {totalScore}</div>
         <div className="turn-score">Turn Score: {turnScore}</div>
       </div>
-      <Dice dice={dice} />
+      <Dice dice={getDice(diceState)} />
       <Controls
         reroll={reroll}
         score={score}
