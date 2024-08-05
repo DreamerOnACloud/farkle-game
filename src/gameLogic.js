@@ -1,3 +1,4 @@
+
 export const calculateTripletScore = (count, index) => {
   if (index === 0) { // Special case for 1s
     return 1000 * (count === 3 ? 1 : 2 ** (count - 3));
@@ -45,14 +46,9 @@ export const calculateScore = (diceValues) => {
 
   counts.forEach((count, index) => {
     if (count >= 3) {
-      if (index === 0) {
-        score += 1000 * (count === 3 ? 1 : 2 ** (count - 3));
-        scoreMessage += `${count} "1"s = ${1000 * (count === 3 ? 1 : 2 ** (count - 3))} points. `;
-      } else {
-        score += (index + 1) * 100 * (count === 3 ? 1 : 2 ** (count - 3));
-        scoreMessage += `${count} "${index + 1}"s = ${(index + 1) * 100 * (count === 3 ? 1 : 2 ** (count - 3))} points. `;
-      }
-      scoringDice.push(...getScoringDiceIndices(diceValues, index + 1));
+      score += calculateTripletScore(count, index);
+      scoreMessage += `${count} "${index + 1}"s = ${calculateTripletScore(count, index)} points. `;
+      scoringDice.push(...getScoringDiceIndices(diceValues.filter((_, i) => diceValues[i] === index + 1)));
     }
   });
 

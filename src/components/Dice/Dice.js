@@ -3,8 +3,10 @@ import './Dice.css';
 
 const Dice = ({ dice }) => (
   <div className="dice-container">
-    {dice.map((die, index) => (
-      <div key={index} className="dice">{die.value}</div>
+    {dice.map((die) => (
+      <div key={die.index} className={`dice ${die.active ? 'active' : 'inactive'}`}>
+        {die.value}
+      </div>
     ))}
   </div>
 );

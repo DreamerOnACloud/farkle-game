@@ -6,6 +6,9 @@ import { calculateScore, getScoringDiceIndices } from './gameLogic';
 // Initialize dice with value and active status
 const initializeDice = () => Array(6).fill().map((_, index) => ({ index, value: Math.floor(Math.random() * 6) + 1, active: true }));
 
+// Helper function to get dice values
+const getDiceValues = (dice) => dice.map(die => die.value);
+
 const App = () => {
   const [totalScore, setTotalScore] = useState(0);
   const [turnScore, setTurnScore] = useState(0);
@@ -18,7 +21,7 @@ const App = () => {
   }, []);
 
   const updateScores = (dice) => {
-    const diceValues = dice.map(die => die.value);
+    const diceValues = getDiceValues(dice);
     const { score, scoreMessage } = calculateScore(diceValues);
     setTurnScore(score);
     setScoreDetails(`Turn score: ${score}. ${scoreMessage}`);
@@ -31,7 +34,7 @@ const App = () => {
   };
 
   const reroll = () => {
-    const scoringDiceIndices = getScoringDiceIndices(dice.map(die => die.value));
+    const scoringDiceIndices = getScoringDiceIndices(getDiceValues(dice));
     console.log("Scoring Dice Indices: ", scoringDiceIndices);
 
     const newDice = dice.map((die) => {
@@ -47,7 +50,7 @@ const App = () => {
   };
 
   const score = () => {
-    const { score, scoreMessage } = calculateScore(dice.map(die => die.value));
+    const { score, scoreMessage } = calculateScore(getDiceValues(dice));
     setTurnScore(score);
     setScoreDetails(scoreMessage);
   };
