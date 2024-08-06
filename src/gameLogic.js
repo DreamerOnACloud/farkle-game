@@ -44,6 +44,9 @@ export const calculateSingleScores = (counts, diceState) => {
 };
 
 export const calculateScore = (diceState) => {
+  // Filter out inactive dice
+  const activeDiceState = diceState.filter(die => die.active);
+
   const countNumberAmounts = (diceValues) => {
     let counts = Array(6).fill(0);
     diceValues.forEach((value) => counts[value - 1]++);
@@ -54,7 +57,7 @@ export const calculateScore = (diceState) => {
   let scoreMessage = "";
   let scoringDice = [];
 
-  const diceValues = getDiceValues(diceState);
+  const diceValues = getDiceValues(activeDiceState);
   let counts = countNumberAmounts(diceValues);
 
   let newDiceState = [...diceState];
@@ -79,7 +82,8 @@ export const calculateScore = (diceState) => {
   return { score, scoreMessage, scoringDice, newDiceState };
 };
 
-// New helper functions
+
+// Helper functions
 export const getDiceValues = (diceState) => diceState.map(die => die.value);
 
 export const getDice = (diceState) => diceState.map(die => ({ index: die.index, value: die.value, active: die.active }));
