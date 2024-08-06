@@ -23,6 +23,7 @@ const App = () => {
   const [diceState, setDiceState] = useState(initialDiceState);
   const [turnDiceState, setTurnDiceState] = useState(initialDiceState);
   const [scoreDetails, setScoreDetails] = useState(initialScoreDetails);
+  const [gameOver, setGameOver] = useState(false);
 
   useEffect(() => {
     restartGame();
@@ -44,8 +45,8 @@ const App = () => {
     console.log("Calculating turn score...");
     const { score, scoreMessage, scoringDice, newDiceState } = calculateScore(turnDiceState);
 
-    if(score === 0) {
-      gameOver();
+    if (score === 0) {
+      endGame();
       return;
     }
     console.log("Turn Score: ", score);
@@ -53,15 +54,15 @@ const App = () => {
     console.log("Scoring Dice Indices: ", scoringDice);
     console.log("Updated Dice State after scoring: ", newDiceState);
 
-    checkForEndGame();
     setTurnDiceState(newDiceState);
     setTurnScore(score);
     setScoreDetails(`Turn score: ${score}. ${scoreMessage}\n Scoring dice: ${scoringDice}`);
   };
 
-  const gameOver = () => {
-      console.log("### Game over! ###");
-      setScoreDetails("Game over!");
+  const endGame = () => {
+    console.log("### Game over! ###");
+    setScoreDetails("Game over!");
+    setGameOver(true);
   };
 
   const score = () => {
@@ -74,14 +75,18 @@ const App = () => {
 
   const scoreAndEndTurn = () => {
     score();
-    const activeDice = turnDiceState.filter(die => die.active);
-    setTurnDiceState(activeDice);
+    if (turnDiceState.every(die => !die.active)) {
+      setTurnDiceState(initialDiceState);
+    } else {
+      const activeDice = turnDiceState.filter(die => die.active);
+      setTurnDiceState(activeDice);
+    }
   };
 
-  const checkForEndGame = (newTotalScore, score) => {
+  const checkForEndGame = (newTotalScore) => {
     if (newTotalScore >= 4000) {
       setScoreDetails(`You win! Final score: ${newTotalScore}`);
-      gameOver();
+      endGame();
     }
   };
 
@@ -91,6 +96,7 @@ const App = () => {
     setDiceState(initialDiceState);
     setTurnDiceState(initialDiceState);
     setScoreDetails(initialScoreDetails);
+    setGameOver(false);
   };
 
   const restartGame = () => {
@@ -112,6 +118,7 @@ const App = () => {
         checkForEndGame={checkForEndGame}
         scoreAndEndTurn={scoreAndEndTurn}
         restart={restartGame}
+        gameOver={gameOver}
       />
       <div className="score-details">
         {scoreDetails}
