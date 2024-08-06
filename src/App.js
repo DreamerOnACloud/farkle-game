@@ -24,61 +24,63 @@ const App = () => {
   const [diceState, setDiceState] = useState(initialDiceState);
   const [scoreDetails, setScoreDetails] = useState(initialScoreDetails);
 
-  // Function to roll the dice
+  useEffect(() => {
+    restartGame();
+  }, []);
+
+  // Roll only active dice
   const rollDice = () => {
-    console.log('Rolling dice...');
+    console.log("Rolling dice...");
     const newDice = diceState.map(die => {
       if (die.active) {
         return { ...die, value: Math.floor(Math.random() * 6) + 1 };
       }
       return die;
     });
-    console.log('New Dice Values:', newDice);
+    console.log("New Dice Values after roll: ", newDice);
     setDiceState(newDice);
   };
 
-  // Function to update the dice state based on scoring dice indices
-  const updateDiceState = (scoringDiceIndices) => {
-    console.log('Updating dice state with scoring indices:', scoringDiceIndices);
+  // Update dice state based on scoring dice indices
+  const updateDiceState = (scoringDiceIndices, diceState) => {
+    console.log("Updating dice state...");
     const updatedDiceState = diceState.map((die, index) => ({
       ...die,
       active: !scoringDiceIndices.includes(index)
     }));
-    console.log('Updated Dice State:', updatedDiceState);
+    console.log("Updated Dice State: ", updatedDiceState);
     setDiceState(updatedDiceState);
   };
 
+  // Calculate turn score and update dice state
   const calculateTurnScore = () => {
     console.log("Calculating turn score...");
     const { score, scoreMessage, scoringDice, newDiceState } = calculateScore(diceState);
     console.log("Turn Score: ", score);
     console.log("Score Message: ", scoreMessage);
     console.log("Scoring Dice Indices: ", scoringDice);
-  
-    // Update the dice state with the new dice state returned from calculateScore
+    console.log("Updated Dice State after scoring: ", newDiceState);
+
     setDiceState(newDiceState);
-    console.log("** Updated Dice State: ", newDiceState);
-  
     setTurnScore(score);
     setScoreDetails(`Turn score: ${score}. ${scoreMessage}\n Scoring dice: ${scoringDice}`);
   };
 
-  // Function to add the turn score to the total score
+  // Update total score and reset turn score
   const score = () => {
-    console.log('Scoring turn...');
     const newTotalScore = totalScore + turnScore;
+    console.log("Updating total score to: ", newTotalScore);
     setTotalScore(newTotalScore);
     setTurnScore(0);
     setScoreDetails("");
   };
 
-  // Function to score and end the turn
+  // Calculate score and end the turn
   const scoreAndEndTurn = () => {
     score();
-    // update playable dice
   };
 
-  // Function to score and reroll the dice
+  // Calculate score, check for end game, and reroll if game is not over
   const scoreAndReroll = () => {
     calculateTurnScore();
     const newTotalScore = totalScore + turnScore;
@@ -88,32 +90,26 @@ const App = () => {
     }
   };
 
-  // Function to check for end game
+  // Check if the game has ended
   const checkForEndGame = (newTotalScore) => {
     if (newTotalScore >= 4000) {
       setScoreDetails(`You win! Final score: ${newTotalScore}`);
     }
   };
 
-  // Function to reset the game state
+  // Reset the game state
   const resetState = () => {
-    console.log('Resetting state...');
     setTotalScore(initialTotalScore);
     setTurnScore(initialTurnScore);
     setDiceState(initialDiceState);
     setScoreDetails(initialScoreDetails);
   };
 
-  // Function to restart the game
+  // Restart the game
   const restartGame = () => {
     resetState();
     rollDice();
   };
-
-  // Initial effect to start the game
-  useEffect(() => {
-    restartGame();
-  }, []);
 
   return (
     <div className="App">
