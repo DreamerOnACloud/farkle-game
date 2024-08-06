@@ -3,7 +3,7 @@ import './Controls.css';
 
 const Controls = ({
   resetState,
-  updateTurnScore,
+  calculateTurnScore,
   rollDice,
   checkForEndGame,
   scoreAndEndTurn,
@@ -13,7 +13,7 @@ const Controls = ({
   <div className="controls">
 
     <button onClick={rollDice}>Roll Dice</button>
-    <button onClick={updateTurnScore}>Update Turn Score</button>
+    <button onClick={calculateTurnScore}>Calculate Turn Score</button>
 
     {/* <button onClick={checkForEndGame}>Check for End Game</button> */}
     <button onClick={scoreAndEndTurn}>Score & End Turn</button>

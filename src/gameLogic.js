@@ -1,13 +1,20 @@
-// Update dice state with random values
-export const updateDiceState = (dice) => dice.map(die => ({ ...die, value: Math.floor(Math.random() * 6) + 1 }));
 
-export const calculateTripletScore = (count, index) => {
-  if (index === 0) { // Special case for 1s
-    return 1000 * (count === 3 ? 1 : 2 ** (count - 3));
-  } else {
-    return (index + 1) * 100 * (count === 3 ? 1 : 2 ** (count - 3));
-  }
+export const calculateTripletScore = (count, index, diceState) => {
+  // Create a new diceState to avoid side effects - adheres to the principles of functional programming and immutability
+  const newDiceState = diceState.map(die => {
+    if (die.value === index + 1) {
+      return { ...die, active: false };
+    }
+    return die;
+  });
+
+  const tripletScore = index === 0 ? 
+    1000 * (count === 3 ? 1 : 2 ** (count - 3)) : 
+    (index + 1) * 100 * (count === 3 ? 1 : 2 ** (count - 3));
+
+  return { tripletScore, newDiceState };
 };
+
 
 export const calculateSingleScores = (counts, scoringDice) => {
   let score = 0;
@@ -30,17 +37,20 @@ export const calculateSingleScores = (counts, scoringDice) => {
 
 export const getScoringDiceIndices = (diceValues) => {
   let indices = [];
-  diceValues.forEach((value, index) => {
-    if (value === 1 || value === 5 || diceValues.filter(v => v === value).length >= 3) {
-      indices.push(index);
+  diceValues.forEach((die, index) => {
+    if (die.value === 1 || die.value === 5 || diceValues.filter(v => v.value === die.value).length >= 3) {
+      indices.push(die.index);
     }
   });
   return indices;
 };
 
-export const calculateScore = (diceValues) => {
+export const getNonScoringDiceIndices = (diceValues) => {
+  const scoringIndices = getScoringDiceIndices(diceValues);
+  return diceValues.map((_, index) => index).filter(index => !scoringIndices.includes(index));
+};
 
-  // counts how many times each number appeared on the rolled dice
+export const calculateScore = (diceState) => {
   const countNumberAmounts = (diceValues) => {
     let counts = Array(6).fill(0);
     diceValues.forEach((value) => counts[value - 1]++);
@@ -48,17 +58,20 @@ export const calculateScore = (diceValues) => {
   };
 
   let score = 0;
-  let tripletScore = 0;
   let scoreMessage = "";
   let scoringDice = [];
+  let nonScoringDiceIndices = [];
 
+  const diceValues = diceState.map(die => die.value);
   let counts = countNumberAmounts(diceValues);
-  
+
+  let newDiceState = [...diceState];
   counts.forEach((count, index) => {
     if (count >= 3) {
-      tripletScore = calculateTripletScore(count, index);
+      const { tripletScore, updatedDiceState } = calculateTripletScore(count, index, newDiceState);
       score += tripletScore;
       scoreMessage += `${count} "${index + 1}"s = ${tripletScore} points. `;
+      newDiceState = updatedDiceState;
       scoringDice.push(...getScoringDiceIndices(diceValues.filter((_, i) => diceValues[i] === index + 1)));
     }
   });
@@ -67,8 +80,11 @@ export const calculateScore = (diceValues) => {
   score += singleScores.score;
   scoreMessage += singleScores.scoreMessage;
 
-  return { score, scoreMessage, scoringDice };
+  nonScoringDiceIndices = getNonScoringDiceIndices(diceValues);
+
+  return { score, scoreMessage, scoringDice, nonScoringDiceIndices, newDiceState };
 };
+
 
 // New helper functions
 export const getDiceValues = (diceState) => diceState.map(die => die.value);
