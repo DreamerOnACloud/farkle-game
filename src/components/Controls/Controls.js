@@ -8,18 +8,20 @@ const Controls = ({
   checkForEndGame,
   scoreAndEndTurn,
   restart,
-  scoreAndReroll
+  scoreAndReroll,
+  gameOver
 }) => (
   <div className="controls">
-
-    <button onClick={rollDice}>Roll Dice</button>
-    <button onClick={calculateTurnScore}>Calculate Turn Score</button>
-
-    {/* <button onClick={checkForEndGame}>Check for End Game</button> */}
-    <button onClick={scoreAndEndTurn}>Score & End Turn</button>
-    <button onClick={resetState}>Reset State</button>
-    {/* <button onClick={restart}>Restart</button> */}
-    {/* <button onClick={scoreAndReroll}>Score and Reroll</button> */}
+    {gameOver ? (
+      <button onClick={resetState}>Reset State</button>
+    ) : (
+      <>
+        <button onClick={rollDice}>Roll Dice</button>
+        <button onClick={calculateTurnScore}>Calculate Turn Score</button>
+        <button onClick={scoreAndEndTurn}>Score & End Turn</button>
+        <button onClick={resetState}>Reset State</button>
+      </>
+    )}
   </div>
 );
 

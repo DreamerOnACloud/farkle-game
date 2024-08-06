@@ -1,7 +1,6 @@
 export const calculateTripletScore = (count, index, diceState) => {
-  // Create a new diceState to avoid side effects - adheres to the principles of functional programming and immutability
   const newDiceState = diceState.map(die => {
-    if (die.value === index + 1) {
+    if (die.value === index + 1 && die.active) {
       return { ...die, active: false };
     }
     return die;
@@ -11,14 +10,13 @@ export const calculateTripletScore = (count, index, diceState) => {
     1000 * (count === 3 ? 1 : 2 ** (count - 3)) : 
     (index + 1) * 100 * (count === 3 ? 1 : 2 ** (count - 3));
 
-  console.log('## calculateTripletScore: ', newDiceState);
   return { tripletScore, newDiceState };
 };
 
 export const calculateSingleScores = (counts, diceState) => {
   let score = 0;
   let scoreMessage = "";
-  const newDiceState = [...diceState]; // Clone the dice state
+  const newDiceState = [...diceState];
 
   if (counts[0] < 3) { // Single 1s
     score += counts[0] * 100;
@@ -44,9 +42,7 @@ export const calculateSingleScores = (counts, diceState) => {
 };
 
 export const calculateScore = (diceState) => {
-  // Filter out inactive dice
-  const activeDiceState = diceState.filter(die => die.active);
-
+  const activeDice = diceState.filter(die => die.active);
   const countNumberAmounts = (diceValues) => {
     let counts = Array(6).fill(0);
     diceValues.forEach((value) => counts[value - 1]++);
@@ -57,7 +53,7 @@ export const calculateScore = (diceState) => {
   let scoreMessage = "";
   let scoringDice = [];
 
-  const diceValues = getDiceValues(activeDiceState);
+  const diceValues = getDiceValues(activeDice);
   let counts = countNumberAmounts(diceValues);
 
   let newDiceState = [...diceState];
@@ -75,15 +71,13 @@ export const calculateScore = (diceState) => {
   scoreMessage += singleScores.scoreMessage;
   newDiceState = singleScores.newDiceState;
 
-  // Calculate scoringDice based on dice with active = false
   scoringDice = newDiceState.filter(die => !die.active).map(die => die.index);
 
   console.log('Updated Dice State after scoring: ', newDiceState); // Log the updated dice state
   return { score, scoreMessage, scoringDice, newDiceState };
 };
 
-
-// Helper functions
+// New helper functions
 export const getDiceValues = (diceState) => diceState.map(die => die.value);
 
 export const getDice = (diceState) => diceState.map(die => ({ index: die.index, value: die.value, active: die.active }));
