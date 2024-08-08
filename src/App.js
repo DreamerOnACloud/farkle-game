@@ -25,6 +25,12 @@ const App = () => {
   const [scoreDetails, setScoreDetails] = useState(initialScoreDetails);
   const [gameOver, setGameOver] = useState(false);
   const [isScoreUpdated, setIsScoreUpdated] = useState(false);
+  const [isPlayerChanged, setIsPlayerChanged] = useState(false);
+
+  // State for second player
+  const [player1Score, setPlayer1Score] = useState(initialTotalScore);
+  const [player2Score, setPlayer2Score] = useState(initialTotalScore);
+  const [currentPlayer, setCurrentPlayer] = useState(1);
 
   useEffect(() => {
     restartGame();
@@ -36,6 +42,13 @@ const App = () => {
       setIsScoreUpdated(false); // Reset the flag after rolling dice
     }
   }, [isScoreUpdated]);
+
+  useEffect(() => {
+    if (isPlayerChanged) {
+      rollDice();
+      setIsPlayerChanged(false); // Reset the flag after rolling dice
+    }
+  }, [isPlayerChanged]);
 
   const rollDice = () => {
     console.log("Rolling dice...");
@@ -99,18 +112,30 @@ const App = () => {
     setIsScoreUpdated(true);
   };
 
+  const alternatePlayer = () => {
+    setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+    setTurnDiceState(initialDiceState);
+    setIsPlayerChanged(true);
+  };
+
   const scoreAndReroll = () => {
     console.log("Executing scoreAndReroll...");
     updateScore();
   };
 
-  const scoreAndEndTurn = () => {
+  const scoreAndHold = () => {
     updateScore();
+    if (currentPlayer === 1) {
+      setPlayer1Score(totalScore);
+    } else {
+      setPlayer2Score(totalScore);
+    }
+    alternatePlayer();
   };
 
   const checkForEndGame = (newTotalScore) => {
     if (newTotalScore >= 4000) {
-      setScoreDetails(`You win! Final score: ${newTotalScore}`);
+      setScoreDetails(`Player ${currentPlayer} wins! Final score: ${newTotalScore}`);
       endGame();
     }
   };
@@ -122,6 +147,9 @@ const App = () => {
     setTurnDiceState(initialDiceState);
     setScoreDetails(initialScoreDetails);
     setGameOver(false);
+    setPlayer1Score(initialTotalScore);
+    setPlayer2Score(initialTotalScore);
+    setCurrentPlayer(1);
   };
 
   const restartGame = () => {
@@ -134,6 +162,9 @@ const App = () => {
       <div className="scores">
         <div className="total-score">Total Score: {totalScore}</div>
         <div className="turn-score">Turn Score: {turnScore}</div>
+        <div className="player-score">Player 1 Score: {player1Score}</div>
+        <div className="player-score">Player 2 Score: {player2Score}</div>
+        <div className="current-player">Current Player: {currentPlayer}</div>
       </div>
       <Dice dice={getDice(turnDiceState)} />
       <Controls
@@ -142,7 +173,7 @@ const App = () => {
         rollDice={rollDice}
         checkForEndGame={checkForEndGame}
         scoreAndReroll={scoreAndReroll}
-        scoreAndEndTurn={scoreAndEndTurn}
+        scoreAndHold={scoreAndHold}
         restart={restartGame}
         gameOver={gameOver}
       />

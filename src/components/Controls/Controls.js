@@ -5,7 +5,7 @@ const Controls = ({
   resetState,
   calculateTurnScore,
   rollDice,
-  scoreAndEndTurn,
+  scoreAndHold,
   scoreAndReroll,
   gameOver
 }) => (
@@ -17,7 +17,7 @@ const Controls = ({
         <button onClick={rollDice}>Roll Dice</button>
         <button onClick={calculateTurnScore}>Calculate Turn Score</button>
         <button onClick={scoreAndReroll}>Score & Reroll</button>
-        <button onClick={scoreAndEndTurn}>Score & End Turn</button>
+        <button onClick={scoreAndHold}>scoreAndHold</button>
         <button onClick={resetState}>Reset State</button>
       </>
     )}
