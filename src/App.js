@@ -24,10 +24,18 @@ const App = () => {
   const [turnDiceState, setTurnDiceState] = useState(initialDiceState);
   const [scoreDetails, setScoreDetails] = useState(initialScoreDetails);
   const [gameOver, setGameOver] = useState(false);
+  const [isScoreUpdated, setIsScoreUpdated] = useState(false);
 
   useEffect(() => {
     restartGame();
   }, []);
+
+  useEffect(() => {
+    if (isScoreUpdated) {
+      rollDice();
+      setIsScoreUpdated(false); // Reset the flag after rolling dice
+    }
+  }, [isScoreUpdated]);
 
   const rollDice = () => {
     console.log("Rolling dice...");
@@ -66,6 +74,7 @@ const App = () => {
   };
 
   const updateScore = () => {
+    console.log("Executing updateScore...");
     const newTotalScore = totalScore + turnScore;
     const activeDice = turnDiceState.filter(die => die.active);
 
@@ -75,16 +84,24 @@ const App = () => {
     setScoreDetails("");
 
     if (activeDice.length === 0) {
+      console.log("No active dice, resetting to initial state.");
       setTurnDiceState(initialDiceState);
       setScoreDetails(`You may reroll all dice!`);
     } else {
+      console.log("Setting active dice for next roll: ", activeDice);
       setTurnDiceState(activeDice);
     }
+
+    // Check for end game condition after score update
+    checkForEndGame(newTotalScore);
+
+    // Indicate that score update is complete
+    setIsScoreUpdated(true);
   };
 
   const scoreAndReroll = () => {
+    console.log("Executing scoreAndReroll...");
     updateScore();
-    rollDice();
   };
 
   const scoreAndEndTurn = () => {
