@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Dice from './components/Dice/Dice.js';
 import Controls from './components/Controls/Controls.js';
 import { calculateScore, getDiceValues, getDice } from './gameLogic';
+import './App.css'; // Assuming you have a CSS file for styling
 
-const initialTotalScore = 0;
 const initialTurnScore = 0;
 
 const initialDiceState = [
@@ -18,7 +18,6 @@ const initialDiceState = [
 const initialScoreDetails = "";
 
 const App = () => {
-  const [totalScore, setTotalScore] = useState(initialTotalScore);
   const [turnScore, setTurnScore] = useState(initialTurnScore);
   const [diceState, setDiceState] = useState(initialDiceState);
   const [turnDiceState, setTurnDiceState] = useState(initialDiceState);
@@ -27,9 +26,9 @@ const App = () => {
   const [isScoreUpdated, setIsScoreUpdated] = useState(false);
   const [isPlayerChanged, setIsPlayerChanged] = useState(false);
 
-  // State for second player
-  const [player1Score, setPlayer1Score] = useState(initialTotalScore);
-  const [player2Score, setPlayer2Score] = useState(initialTotalScore);
+  // State for players
+  const [player1Score, setPlayer1Score] = useState(0);
+  const [player2Score, setPlayer2Score] = useState(0);
   const [currentPlayer, setCurrentPlayer] = useState(1);
 
   useEffect(() => {
@@ -67,7 +66,10 @@ const App = () => {
     const { score, scoreMessage, scoringDice, newDiceState } = calculateScore(turnDiceState);
 
     if (score === 0) {
-      endGame();
+      console.log("No score for this turn. Switching player...");
+      setTurnScore(0);
+      setScoreDetails(`No score for this turn. Switching to player ${currentPlayer === 1 ? 2 : 1}`);
+      alternatePlayer();
       return;
     }
     console.log("Turn Score: ", score);
@@ -81,18 +83,21 @@ const App = () => {
   };
 
   const endGame = () => {
-    console.log("### Game over! ###");
-    setScoreDetails("Game over!");
     setGameOver(true);
   };
 
   const updateScore = () => {
     console.log("Executing updateScore...");
-    const newTotalScore = totalScore + turnScore;
+    const newTotalScore = currentPlayer === 1 ? player1Score + turnScore : player2Score + turnScore;
     const activeDice = turnDiceState.filter(die => die.active);
 
-    console.log("Updating total score to: ", newTotalScore);
-    setTotalScore(newTotalScore);
+    if (currentPlayer === 1) {
+      setPlayer1Score(newTotalScore);
+    } else {
+      setPlayer2Score(newTotalScore);
+    }
+
+    console.log("Updating total score for player ", currentPlayer, " to: ", newTotalScore);
     setTurnScore(0);
     setScoreDetails("");
 
@@ -125,11 +130,6 @@ const App = () => {
 
   const scoreAndHold = () => {
     updateScore();
-    if (currentPlayer === 1) {
-      setPlayer1Score(totalScore);
-    } else {
-      setPlayer2Score(totalScore);
-    }
     alternatePlayer();
   };
 
@@ -141,14 +141,13 @@ const App = () => {
   };
 
   const resetState = () => {
-    setTotalScore(initialTotalScore);
     setTurnScore(initialTurnScore);
     setDiceState(initialDiceState);
     setTurnDiceState(initialDiceState);
     setScoreDetails(initialScoreDetails);
     setGameOver(false);
-    setPlayer1Score(initialTotalScore);
-    setPlayer2Score(initialTotalScore);
+    setPlayer1Score(0);
+    setPlayer2Score(0);
     setCurrentPlayer(1);
   };
 
@@ -160,10 +159,13 @@ const App = () => {
   return (
     <div className="App">
       <div className="scores">
-        <div className="total-score">Total Score: {totalScore}</div>
+        <div className={`player-score ${currentPlayer === 1 ? 'active-player' : ''}`}>
+          Player 1 Score: {player1Score}
+        </div>
+        <div className={`player-score ${currentPlayer === 2 ? 'active-player' : ''}`}>
+          Player 2 Score: {player2Score}
+        </div>
         <div className="turn-score">Turn Score: {turnScore}</div>
-        <div className="player-score">Player 1 Score: {player1Score}</div>
-        <div className="player-score">Player 2 Score: {player2Score}</div>
         <div className="current-player">Current Player: {currentPlayer}</div>
       </div>
       <Dice dice={getDice(turnDiceState)} />

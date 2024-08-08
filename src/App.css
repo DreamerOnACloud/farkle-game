@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+.player-score {
+  padding: 10px;
+  margin: 10px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+}
+
+.active-player {
+  border-color: #ff6347; /* Highlight color */
+  background-color: #ffe4e1; /* Light highlight background */
+}
