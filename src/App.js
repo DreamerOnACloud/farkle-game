@@ -65,22 +65,30 @@ const App = () => {
     setGameOver(true);
   };
 
-  const score = () => {
+  const updateScore = () => {
     const newTotalScore = totalScore + turnScore;
+    const activeDice = turnDiceState.filter(die => die.active);
+
     console.log("Updating total score to: ", newTotalScore);
     setTotalScore(newTotalScore);
     setTurnScore(0);
     setScoreDetails("");
+
+    if (activeDice.length === 0) {
+      setTurnDiceState(initialDiceState);
+      setScoreDetails(`You may reroll all dice!`);
+    } else {
+      setTurnDiceState(activeDice);
+    }
+  };
+
+  const scoreAndReroll = () => {
+    updateScore();
+    rollDice();
   };
 
   const scoreAndEndTurn = () => {
-    score();
-    if (turnDiceState.every(die => !die.active)) {
-      setTurnDiceState(initialDiceState);
-    } else {
-      const activeDice = turnDiceState.filter(die => die.active);
-      setTurnDiceState(activeDice);
-    }
+    updateScore();
   };
 
   const checkForEndGame = (newTotalScore) => {
@@ -116,6 +124,7 @@ const App = () => {
         calculateTurnScore={calculateTurnScore}
         rollDice={rollDice}
         checkForEndGame={checkForEndGame}
+        scoreAndReroll={scoreAndReroll}
         scoreAndEndTurn={scoreAndEndTurn}
         restart={restartGame}
         gameOver={gameOver}

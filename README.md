@@ -1,70 +1,80 @@
-# Getting Started with Create React App
+# Farkle Game
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a React-based implementation of the popular dice game Farkle. The game involves rolling six dice to accumulate points based on various combinations.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Roll dice and accumulate points based on specific rules.
+- End turn and score points.
+- Reroll only active (scoring) dice.
+- Reset game state and restart the game.
+- Check for game over conditions.
 
-### `npm start`
+## Installation
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+To run this project locally, follow these steps:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/your-username/farkle-game.git
+    cd farkle-game
+    ```
 
-### `npm test`
+2. Install dependencies:
+    ```sh
+    npm install
+    ```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3. Start the development server:
+    ```sh
+    npm start
+    ```
 
-### `npm run build`
+## Game Rules
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- A turn involves rolling six dice.
+- Points are scored based on combinations of dice rolled:
+  - 1s and 5s are worth points individually.
+  - Three or more of a kind are worth points.
+  - A full list of scoring rules is implemented in the `gameLogic.js` file.
+- Players can continue rolling the active (scoring) dice or end their turn to score the accumulated points.
+- The game ends when a player reaches a specified score (default: 4000 points).
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## File Structure
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- `src/App.js`: Main component managing game state and rendering the UI.
+- `src/components/Dice/Dice.js`: Component for displaying dice.
+- `src/components/Controls/Controls.js`: Component for displaying control buttons.
+- `src/gameLogic.js`: Contains all the game logic functions including score calculation and dice state updates.
 
-### `npm run eject`
+## Usage
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Rolling Dice
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+The `rollDice` function rolls the active dice and updates their values.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Calculating Score
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+The `calculateTurnScore` function calculates the score for the current turn based on the dice values and updates the dice state.
 
-## Learn More
+### Ending Turn
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+The `scoreAndEndTurn` function scores the current turn and updates the dice state for the next turn.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Restarting Game
 
-### Code Splitting
+The `restartGame` function resets all game states and starts a new game.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Contributing
 
-### Analyzing the Bundle Size
+Contributions are welcome! Please submit a pull request or open an issue for any suggestions or improvements.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## License
 
-### Making a Progressive Web App
+This project is licensed under the MIT License.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Acknowledgements
 
-### Advanced Configuration
+- React documentation for guidance on building components.
+- Any other resources or libraries used in the project.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
