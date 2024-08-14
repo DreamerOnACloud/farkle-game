@@ -35,9 +35,26 @@
   border-radius: 5px;
 }
 
-.active-player {
-  border-color: #ff6347; /* Highlight color */
-  background-color: #ffe4e1; /* Light highlight background */
+/* Player 1 Styles */
+.player-1-score {
+  color: white;
+  background-color: #ff6347; /* Red background */
+  border-color: #ff6347; /* Red border */
+}
+
+.active-player.player-1-score {
+  background-color: #ff4500; /* Darker red for active state */
+}
+
+/* Player 2 Styles */
+.player-2-score {
+  color: white;
+  background-color: #4682b4; /* Blue background */
+  border-color: #4682b4; /* Blue border */
+}
+
+.active-player.player-2-score {
+  background-color: #1e90ff; /* Darker blue for active state */
 }
 
 .score-details {
@@ -58,14 +75,39 @@
 
 .logs-header {
   font-weight: bold;
-  color:chocolate;
+  color: chocolate;
 }
 
 .score-history {
   border: 1px solid #ccc;
-  width:100%;
+  width: 100%;
   height: 100%;
   border-radius: 5px;
   overflow-y: scroll;
   background-color: #f9f9f9;
+}
+
+button {
+  padding: 10px;
+  margin: 10px;
+  border-radius: 5px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Player 1 Button Styles */
+.player-1-button {
+  background-color: #ff6347; /* Red background */
+  color: white;
+}
+
+/* Player 2 Button Styles */
+.player-2-button {
+  background-color: #4682b4; /* Blue background */
+  color: white;
+}
+
+button:hover {
+  opacity: 0.8;
 }

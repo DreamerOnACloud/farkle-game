@@ -25,9 +25,8 @@ const App = () => {
   const [gameOver, setGameOver] = useState(false);
   const [isScoreUpdated, setIsScoreUpdated] = useState(false);
   const [isPlayerChanged, setIsPlayerChanged] = useState(false);
-  const [scoreHistory, setScoreHistory] = useState([]); // New state for score history
+  const [scoreHistory, setScoreHistory] = useState([]);
 
-  // State for players
   const [player1Score, setPlayer1Score] = useState(0);
   const [player2Score, setPlayer2Score] = useState(0);
   const [currentPlayer, setCurrentPlayer] = useState(1);
@@ -39,16 +38,31 @@ const App = () => {
   useEffect(() => {
     if (isScoreUpdated) {
       rollDice();
-      setIsScoreUpdated(false); // Reset the flag after rolling dice
+      setIsScoreUpdated(false);
     }
   }, [isScoreUpdated]);
 
   useEffect(() => {
     if (isPlayerChanged) {
       rollDice();
-      setIsPlayerChanged(false); // Reset the flag after rolling dice
+      setIsPlayerChanged(false);
     }
   }, [isPlayerChanged]);
+
+  useEffect(() => {
+    // Check if the current player's score exceeds or meets the winning threshold
+    if (player1Score >= 4000 || player2Score >= 4000) {
+      setScoreDetails(`Player ${currentPlayer} wins! Final score: ${currentPlayer === 1 ? player1Score : player2Score}`);
+      setGameOver(true);
+    }
+  }, [player1Score, player2Score, currentPlayer]);
+
+  useEffect(() => {
+    // Log the correct player after the state has been updated
+    if (isPlayerChanged) {
+      setScoreDetails(`Now it is Player ${currentPlayer}'s turn.`);
+    }
+  }, [currentPlayer]);
 
   useEffect(() => {
     if (scoreDetails) {
@@ -57,32 +71,23 @@ const App = () => {
   }, [scoreDetails]);
 
   const rollDice = () => {
-    console.log("Rolling dice...");
     const newDice = turnDiceState.map(die => {
       if (die.active) {
         return { ...die, value: Math.floor(Math.random() * 6) + 1 };
       }
       return die;
     });
-    console.log("New Dice Values after roll: ", newDice);
     setTurnDiceState(newDice);
   };
 
   const calculateTurnScore = () => {
-    console.log("Calculating turn score...");
     const { score, scoreMessage, scoringDice, newDiceState } = calculateScore(turnDiceState);
 
     if (score === 0) {
-      console.log("No score for this turn. Switching player...");
       setTurnScore(0);
-      setScoreDetails(`No score for this turn. Switching to player ${currentPlayer === 1 ? 2 : 1}`);
       alternatePlayer();
       return;
     }
-    console.log("Turn Score: ", score);
-    console.log("Score Message: ", scoreMessage);
-    console.log("Scoring Dice Indices: ", scoringDice);
-    console.log("Updated Dice State after scoring: ", newDiceState);
 
     setTurnDiceState(newDiceState);
     setTurnScore(score);
@@ -94,7 +99,6 @@ const App = () => {
   };
 
   const updateScore = () => {
-    console.log("Executing updateScore...");
     const newTotalScore = currentPlayer === 1 ? player1Score + turnScore : player2Score + turnScore;
     const activeDice = turnDiceState.filter(die => die.active);
 
@@ -104,23 +108,15 @@ const App = () => {
       setPlayer2Score(newTotalScore);
     }
 
-    console.log("Updating total score for player ", currentPlayer, " to: ", newTotalScore);
     setTurnScore(0);
     setScoreDetails("");
 
     if (activeDice.length === 0) {
-      console.log("No active dice, resetting to initial state.");
       setTurnDiceState(initialDiceState);
       setScoreDetails(`You may reroll all dice!`);
     } else {
-      console.log("Setting active dice for next roll: ", activeDice);
       setTurnDiceState(activeDice);
     }
-
-    // Check for end game condition after score update
-    checkForEndGame(newTotalScore);
-
-    // Indicate that score update is complete
     setIsScoreUpdated(true);
   };
 
@@ -131,20 +127,12 @@ const App = () => {
   };
 
   const scoreAndReroll = () => {
-    console.log("Executing scoreAndReroll...");
     updateScore();
   };
 
   const scoreAndHold = () => {
     updateScore();
     alternatePlayer();
-  };
-
-  const checkForEndGame = (newTotalScore) => {
-    if (newTotalScore >= 4000) {
-      setScoreDetails(`Player ${currentPlayer} wins! Final score: ${newTotalScore}`);
-      endGame();
-    }
   };
 
   const resetState = () => {
@@ -156,7 +144,7 @@ const App = () => {
     setPlayer1Score(0);
     setPlayer2Score(0);
     setCurrentPlayer(1);
-    setScoreHistory([]); // Reset score history
+    setScoreHistory([]);
   };
 
   const restartGame = () => {
@@ -167,10 +155,10 @@ const App = () => {
   return (
     <div className="App">
       <div className="scores">
-        <div className={`player-score ${currentPlayer === 1 ? 'active-player' : ''}`}>
+        <div className={`player-score player-1-score ${currentPlayer === 1 ? 'active-player' : ''}`}>
           Player 1 Score: {player1Score}
         </div>
-        <div className={`player-score ${currentPlayer === 2 ? 'active-player' : ''}`}>
+        <div className={`player-score player-2-score ${currentPlayer === 2 ? 'active-player' : ''}`}>
           Player 2 Score: {player2Score}
         </div>
         <div className="turn-score">Turn Score: {turnScore}</div>
@@ -181,11 +169,10 @@ const App = () => {
         resetState={resetState}
         calculateTurnScore={calculateTurnScore}
         rollDice={rollDice}
-        checkForEndGame={checkForEndGame}
         scoreAndReroll={scoreAndReroll}
         scoreAndHold={scoreAndHold}
-        restart={restartGame}
         gameOver={gameOver}
+        currentPlayer={currentPlayer}
       />
       <div className="score-details">
         {scoreDetails}
@@ -198,7 +185,6 @@ const App = () => {
           ))}
         </div>
       </div>
-
     </div>
   );
 };
