@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Dice from './components/Dice/Dice.js';
 import Controls from './components/Controls/Controls.js';
 import { calculateScore, getDiceValues, getDice } from './gameLogic';
-import './App.css'; // Assuming you have a CSS file for styling
+import './App.css';
 
 const initialTurnScore = 0;
 
@@ -25,6 +25,7 @@ const App = () => {
   const [gameOver, setGameOver] = useState(false);
   const [isScoreUpdated, setIsScoreUpdated] = useState(false);
   const [isPlayerChanged, setIsPlayerChanged] = useState(false);
+  const [scoreHistory, setScoreHistory] = useState([]); // New state for score history
 
   // State for players
   const [player1Score, setPlayer1Score] = useState(0);
@@ -48,6 +49,12 @@ const App = () => {
       setIsPlayerChanged(false); // Reset the flag after rolling dice
     }
   }, [isPlayerChanged]);
+
+  useEffect(() => {
+    if (scoreDetails) {
+      setScoreHistory(prevHistory => [...prevHistory, scoreDetails]);
+    }
+  }, [scoreDetails]);
 
   const rollDice = () => {
     console.log("Rolling dice...");
@@ -149,6 +156,7 @@ const App = () => {
     setPlayer1Score(0);
     setPlayer2Score(0);
     setCurrentPlayer(1);
+    setScoreHistory([]); // Reset score history
   };
 
   const restartGame = () => {
@@ -182,6 +190,15 @@ const App = () => {
       <div className="score-details">
         {scoreDetails}
       </div>
+      <div className="logs">
+        <h3 className="logs-header">Logs</h3>
+        <div className="score-history">
+          {scoreHistory.map((detail, index) => (
+            <div key={index}>{detail}</div>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 };
